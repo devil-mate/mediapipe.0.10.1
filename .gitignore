@@ -9,3 +9,5 @@ node_modules/
 build
 *.so
 mediapipe.egg-info
+*.binarypb
+\__pycache__

@@ -137,19 +137,38 @@ node: {
   output_stream: "PRESENCE:prev_pose_rect_from_landmarks_is_present"
 }
 
-# Calculates size of the image.
+
 node {
-  calculator: "ImagePropertiesCalculator"
-  input_stream: "IMAGE_GPU:image"
-  output_stream: "SIZE:image_size"
+    calculator: "ColorConvertCalculator"
+    input_stream: "RGB_IN:image"
+    output_stream: "RGBA_OUT:image_rgba"
 }
+
+node {
+    calculator: "ImageFrameToGpuBufferCalculator"
+    input_stream: "image_rgba"
+    output_stream: "image_gpu"
+    } 
+node {
+    calculator: "ImagePropertiesCalculator"
+    input_stream: "IMAGE_GPU:image_gpu"
+    output_stream: "SIZE:image_size"
+}
+
+# Calculates size of the image.
+# node {
+#   calculator: "ImagePropertiesCalculator"
+#   input_stream: "IMAGE_GPU:image"
+#   output_stream: "SIZE:image_size"
+# }
 
 # Drops the incoming image if the pose has already been identified from the
 # previous image. Otherwise, passes the incoming image through to trigger a new
 # round of pose detection.
 node {
   calculator: "GateCalculator"
-  input_stream: "image"
+  # input_stream: "image"
+  input_stream: "image_gpu"
   input_stream: "image_size"
   input_stream: "DISALLOW:prev_pose_rect_from_landmarks_is_present"
   output_stream: "image_for_pose_detection"
